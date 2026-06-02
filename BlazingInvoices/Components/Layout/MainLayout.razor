@@ -1,6 +1,43 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+<div class="flex min-h-screen flex-col">
+
+    <div class="topbar sticky top-0 z-30 w-full border-b border-slate-200 bg-white">
+        <div class="flex items-center justify-between gap-3 px-4 py-3">
+            <h2 class="text-xl font-bold">Blazing Invoice</h2>
+            <div class="flex items-center gap-3">
+                <label class="font-medium">Test</label>
+                <button type="button" class="cursor-pointer rounded-lg border border-rose-300 bg-rose-50 px-3 py-1 text-rose-700 hover:bg-rose-100">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-1">
+        <aside class="w-72 border-r border-slate-200 bg-white">
+            <nav class="space-y-2 p-3">
+                <NavLink href="dashboard" class="flex w-full rounded bg-slate-200 px-3 py-2 hover:bg-emerald-200">
+                    <span class="font-medium">Dashboard</span>
+                </NavLink>
+                <NavLink href="invoices" class="flex w-full rounded bg-slate-200 px-3 py-2 hover:bg-emerald-200">
+                    <span class="font-medium">Invoices</span>
+                </NavLink>
+                <NavLink href="dashboard" class="flex w-full rounded bg-slate-200 px-3 py-2 hover:bg-emerald-200">
+                    <span class="font-medium">Clients</span>
+                </NavLink>
+                <NavLink href="services" class="flex w-full rounded bg-slate-200 px-3 py-2 hover:bg-emerald-200">
+                    <span class="font-medium">Product/Services</span>
+                </NavLink>
+            </nav>
+        </aside>
+        <div class="body-content">
+            @Body
+        </div>
+    </div>
+
+
+</div>
+
+
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

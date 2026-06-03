@@ -1,0 +1,124 @@
+﻿@page "/services"
+@using System.ComponentModel.DataAnnotations
+
+<div class="roudned-lg flex w-full flex-col bg-white p-5">
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-medium">Product/Services</h1>
+
+        <button type="button" class="flex cursor-pointer items-center justify-center gap-2 rounded border border-green-300 bg-green-100 px-3 py-1 hover:bg-green-200">
+            <img src="icons/plus.svg" />
+            <span>Add Product/Service</span>
+        </button>
+    </div>
+    <hr class="mt-2 mb-5 w-full text-slate-400" />
+
+    <div class="page-content">
+        @if(!_services.Any())
+        {
+            <div class="m-5 p-5 text-center">
+                <p class="text-3xl font-medium text-slate-500">No product/services added yet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="grid grid-cols-2 gap-7">
+                @foreach(var service in _services)
+                {
+                    <div class="rounded border border-slate-200 p-3 hover:bg-green-50">
+                        <div class="flex justify-between gap-3">
+                            <h2 class="font-medium">@service.Name</h2>
+                            <div class="flex flex-col items-end gap-2">
+                                <label class="font-medium">@service.Rate.ToString("C")</label>
+                                <span class="text-sm text-slate-500">@service.Unit</span>
+                            </div>
+                        </div>
+                        <p class="mt-2">@service.Description</p>
+                        <hr class="my-5 w-full text-slate-100" />
+                        <div class="flex items-center justify-end gap-4">
+                            <button type="button" class="flex cursor-pointer items-center justify-center gap-1 border border-blue-300 bg-blue-100 px-2 hover:bg-blue-200">
+                                <img src="icons/pencil.svg" />
+                                <span>Edit</span>
+                            </button>
+                            <button type="button" class="flex cursor-pointer items-center justify-center gap-1 border border-red-300 bg-red-100 px-2 hover:bg-red-200">
+                                <img src="icons/x.svg" />
+                                <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+
+    private IEnumerable<ServiceModel> _services = [];
+
+    protected override void OnInitialized()
+    {
+        _services = ServiceModel.GetSeedData();
+    }
+
+    private class ServiceModel
+    {
+        [Required, MaxLength(100)]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Rate { get; set; }
+
+        [Required, MaxLength(30)]
+        public string Unit { get; set; }
+
+        [Required, MaxLength(250)]
+        public string Description { get; set; }
+
+        internal static IEnumerable<ServiceModel> GetSeedData()
+        {
+            return new List<ServiceModel>
+            {
+        new ServiceModel
+        {
+            Id = 1,
+            Name = "General Consultation",
+            Rate = 750m,
+            Unit = "per hour",
+            Description = "Standard consultation covering assessment, guidance, and professional recommendations."
+        },
+        new ServiceModel
+        {
+            Id = 2,
+            Name = "Installation Service",
+            Rate = 1500m,
+            Unit = "per job",
+            Description = "Full installation service including setup, configuration, and verification."
+        },
+        new ServiceModel
+        {
+            Id = 3,
+            Name = "Maintenance Check",
+            Rate = 500m,
+            Unit = "per visit",
+            Description = "Routine maintenance check to ensure optimal performance and identify potential issues."
+        },
+        new ServiceModel
+        {
+            Id = 4,
+            Name = "Emergency Support",
+            Rate = 2000m,
+            Unit = "per incident",
+            Description = "Priority emergency support with rapid response and issue resolution."
+        },
+        new ServiceModel
+        {
+            Id = 5,
+            Name = "Custom Development",
+            Rate = 1200m,
+            Unit = "per hour",
+            Description = "Tailored development work based on client requirements and specifications."
+        }
+    };
+        }
+    }
+}

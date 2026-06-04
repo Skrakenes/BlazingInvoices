@@ -1,11 +1,11 @@
 ﻿@page "/services"
-@using System.ComponentModel.DataAnnotations
 
 <div class="roudned-lg flex w-full flex-col bg-white p-5">
     <div class="flex items-center justify-between">
         <h1 class="text-xl font-medium">Product/Services</h1>
 
-        <button type="button" class="flex cursor-pointer items-center justify-center gap-2 rounded border border-green-300 bg-green-100 px-3 py-1 hover:bg-green-200">
+        <button type="button" class="flex cursor-pointer items-center justify-center gap-2 rounded border border-green-300 bg-green-100 px-3 py-1 hover:bg-green-200"
+            @onclick="AddNewService">
             <img src="icons/plus.svg" />
             <span>Add Product/Service</span>
         </button>
@@ -35,7 +35,8 @@
                         <p class="mt-2">@service.Description</p>
                         <hr class="my-5 w-full text-slate-100" />
                         <div class="flex items-center justify-end gap-4">
-                            <button type="button" class="flex cursor-pointer items-center justify-center gap-1 border border-blue-300 bg-blue-100 px-2 hover:bg-blue-200">
+                            <button type="button" class="flex cursor-pointer items-center justify-center gap-1 border border-blue-300 bg-blue-100 px-2 hover:bg-blue-200"
+                                    @onclick="() => EditService(service)">
                                 <img src="icons/pencil.svg" />
                                 <span>Edit</span>
                             </button>
@@ -51,74 +52,40 @@
     </div>
 </div>
 
+@if(_showSidebar && _model is not null)
+{
+    <SaveServiceForm Service="_model" 
+        OnSidebarClose="HandleSideBarClosed"/>
+}
+
 @code {
-
-
     private IEnumerable<ServiceModel> _services = [];
+
+    private bool _showSidebar = false;
+    private ServiceModel? _model = null;
 
     protected override void OnInitialized()
     {
         _services = ServiceModel.GetSeedData();
     }
 
-    private class ServiceModel
+    private void AddNewService()
     {
-        [Required, MaxLength(100)]
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public decimal Rate { get; set; }
-
-        [Required, MaxLength(30)]
-        public string Unit { get; set; }
-
-        [Required, MaxLength(250)]
-        public string Description { get; set; }
-
-        internal static IEnumerable<ServiceModel> GetSeedData()
-        {
-            return new List<ServiceModel>
-            {
-        new ServiceModel
-        {
-            Id = 1,
-            Name = "General Consultation",
-            Rate = 750m,
-            Unit = "per hour",
-            Description = "Standard consultation covering assessment, guidance, and professional recommendations."
-        },
-        new ServiceModel
-        {
-            Id = 2,
-            Name = "Installation Service",
-            Rate = 1500m,
-            Unit = "per job",
-            Description = "Full installation service including setup, configuration, and verification."
-        },
-        new ServiceModel
-        {
-            Id = 3,
-            Name = "Maintenance Check",
-            Rate = 500m,
-            Unit = "per visit",
-            Description = "Routine maintenance check to ensure optimal performance and identify potential issues."
-        },
-        new ServiceModel
-        {
-            Id = 4,
-            Name = "Emergency Support",
-            Rate = 2000m,
-            Unit = "per incident",
-            Description = "Priority emergency support with rapid response and issue resolution."
-        },
-        new ServiceModel
-        {
-            Id = 5,
-            Name = "Custom Development",
-            Rate = 1200m,
-            Unit = "per hour",
-            Description = "Tailored development work based on client requirements and specifications."
-        }
-    };
-        }
+        _model = new();
+        _showSidebar = true;
     }
+
+    private void EditService(ServiceModel service)
+    {
+        _model = service.Clone();
+        _showSidebar = true;
+    }
+
+    private void HandleSideBarClosed()
+    {
+        _model = null;
+        _showSidebar = false;
+    }
+
+   
 }

@@ -1,6 +1,7 @@
 using BlazingInvoices.Components;
 using BlazingInvoices.Components.Account;
 using BlazingInvoices.Data;
+using BlazingInvoices.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents(options=>
+    {
 #if DEBUG
-        options.DetailedErrors = true
+        options.DetailedErrors = true;
 #endif
-    );
+    });
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -41,6 +43,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+builder.Services.AddScoped<UiService>();
 
 var app = builder.Build();
 

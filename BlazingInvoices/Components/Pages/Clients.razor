@@ -1,0 +1,88 @@
+﻿@page "/clients"
+
+<div class="roudned-lg flex w-full flex-col bg-white p-5">
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-medium">Client Management</h1>
+
+        <button type="button" class="flex cursor-pointer items-center justify-center gap-2 rounded border border-green-300 bg-green-100 px-3 py-1 hover:bg-green-200"
+                @onclick="AddNewClient">
+            <img src="icons/plus.svg" />
+            <span>Add Client</span>
+        </button>
+    </div>
+    <hr class="mt-2 mb-5 w-full text-slate-400" />
+
+    <div class="page-content">
+        @if (!_clients.Any())
+        {
+            <div class="m-5 p-5 text-center">
+                <p class="text-3xl font-medium text-slate-500">No clients added yet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="">
+                <table class="min-w-full w-full table-fixed text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-600 text-center">
+                            <th class="py-2 text-left">Name</th>
+                            <th class="py-2 text-left">Email</th>
+                            <th class="py-2 text-left">Contact</th>
+                            <th class="py-2 text-left">Remarks</th>
+                            <th class="py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ( var c in _clients)
+                        {
+                            <tr class="border-b border-slate-300 hover:bg-slate-50">
+                                <td class="py-2">@c.Name</td>
+                                <td class="py-2">@c.EmailId</td>
+                                <td class="py-2">@c.ContactNumber</td>
+                                <td class="py-2">@c.Remarks</td>
+                                <td class="py-2">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button type="button" class="flex cursor-pointer items-center justify-center gap-1 border border-blue-300 bg-blue-100 px-2 hover:bg-blue-200"
+                                                @onclick="() => EditClient(c)">
+                                            <img src="icons/pencil.svg" />
+                                            <span>Edit</span>
+                                        </button>
+                                        <button type="button" class="flex cursor-pointer items-center justify-center gap-1 border border-red-300 bg-red-100 px-2 hover:bg-red-200"
+                                                @onclick="() => DeleteClient(c)">
+                                            <img src="icons/x.svg" />
+                                            <span>Delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private IEnumerable<ClientModel> _clients = [];
+
+    protected override void OnInitialized()
+    {
+        _clients = ClientModel.GetSeedData();
+    }
+
+    private void AddNewClient()
+    {
+        
+    }
+
+    private void EditClient(ClientModel c)
+    {
+        
+    }
+
+    private void DeleteClient(ClientModel c)
+    {
+        
+    }
+}

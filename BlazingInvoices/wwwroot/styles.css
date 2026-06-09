@@ -7,10 +7,10 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-50: oklch(97.1% 0.013 17.38);
     --color-red-100: oklch(93.6% 0.032 17.717);
     --color-red-200: oklch(88.5% 0.062 18.334);
     --color-red-300: oklch(80.8% 0.114 19.571);
-    --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-red-600: oklch(57.7% 0.245 27.325);
     --color-green-50: oklch(98.2% 0.018 155.826);
@@ -307,14 +307,14 @@
   .w-72 {
     width: calc(var(--spacing) * 72);
   }
-  .w-96 {
-    width: calc(var(--spacing) * 96);
-  }
   .w-100 {
     width: calc(var(--spacing) * 100);
   }
   .w-\[400px\] {
     width: 400px;
+  }
+  .w-\[450px\] {
+    width: 450px;
   }
   .w-full {
     width: 100%;
@@ -409,14 +409,11 @@
   .border-green-400 {
     border-color: var(--color-green-400);
   }
-  .border-green-600 {
-    border-color: var(--color-green-600);
+  .border-red-200 {
+    border-color: var(--color-red-200);
   }
   .border-red-300 {
     border-color: var(--color-red-300);
-  }
-  .border-red-600 {
-    border-color: var(--color-red-600);
   }
   .border-rose-300 {
     border-color: var(--color-rose-300);
@@ -436,11 +433,17 @@
   .bg-blue-100 {
     background-color: var(--color-blue-100);
   }
+  .bg-green-50 {
+    background-color: var(--color-green-50);
+  }
   .bg-green-100 {
     background-color: var(--color-green-100);
   }
   .bg-green-300 {
     background-color: var(--color-green-300);
+  }
+  .bg-red-50 {
+    background-color: var(--color-red-50);
   }
   .bg-red-100 {
     background-color: var(--color-red-100);
@@ -522,14 +525,14 @@
     --tw-font-weight: var(--font-weight-medium);
     font-weight: var(--font-weight-medium);
   }
-  .text-green-400 {
-    color: var(--color-green-400);
-  }
-  .text-red-400 {
-    color: var(--color-red-400);
+  .text-green-600 {
+    color: var(--color-green-600);
   }
   .text-red-500 {
     color: var(--color-red-500);
+  }
+  .text-red-600 {
+    color: var(--color-red-600);
   }
   .text-rose-700 {
     color: var(--color-rose-700);
@@ -581,6 +584,13 @@
       }
     }
   }
+  .hover\:bg-green-100 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-green-100);
+      }
+    }
+  }
   .hover\:bg-green-200 {
     &:hover {
       @media (hover: hover) {
@@ -620,20 +630,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-slate-300);
-      }
-    }
-  }
-  .hover\:text-green-600 {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-green-600);
-      }
-    }
-  }
-  .hover\:text-red-600 {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-red-600);
       }
     }
   }

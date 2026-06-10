@@ -1,0 +1,53 @@
+
+<EditForm Model="_model">
+    <DataAnnotationsValidator/>
+    <RightSidePanel Title="@(_model.Id == 0 ? "Add Client" : "Edit Client")"
+            OnClose="OnSidebarClose">
+            <div class="space-y-3">
+            <div class="">
+                <label class="text-xs text-slate-500">Name</label>
+                <InputText @bind-value="_model.Name" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Name"></InputText>
+                <ValidationMessage For="() => _model.Name" class="text-xs text-red-500" />
+            </div>
+            
+            <div class="">
+                <label class="text-xs text-slate-500">Email</label>
+                <InputText @bind-value="_model.EmailId" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Email"></InputText>
+                <ValidationMessage For="() => _model.EmailId" class="text-xs text-red-500" />
+            </div>
+            
+            <div class="">
+                <label class="text-xs text-slate-500">Contact Number</label>
+                <InputText @bind-value="_model.ContactNumber" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Contact Number"></InputText>
+                <ValidationMessage For="() => _model.ContactNumber" class="text-xs text-red-500" />
+            </div>
+         
+            <div class="">
+                <label class="text-xs text-slate-500">Remarks</label>
+                <InputTextArea rows="2" @bind-value="_model.Remarks" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Remarks"></InputTextArea>
+                <ValidationMessage For="() => _model.Remarks" class="text-xs text-red-500" />
+            </div>
+        </div>
+
+    </RightSidePanel>
+</EditForm>
+
+@code {
+        [Parameter, EditorRequired]
+    public ClientModel Client { get; set;}
+
+    [Parameter]
+    public EventCallback OnSidebarClose { get; set; }
+
+    private ClientModel _model = new();
+
+
+    protected override void OnParametersSet()
+    {
+        if(Client.Id > 0)
+        {
+            // Edit case, populate _model from service parameter
+            _model = Client.Clone()!;
+        }
+    }
+}

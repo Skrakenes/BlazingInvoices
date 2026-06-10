@@ -1,5 +1,7 @@
 ﻿@page "/clients"
 
+@inject UiService UiService
+
 <div class="roudned-lg flex w-full flex-col bg-white p-5">
     <div class="flex items-center justify-between">
         <h1 class="text-xl font-medium">Client Management</h1>
@@ -22,9 +24,9 @@
         else
         {
             <div class="">
-                <table class="min-w-full w-full table-fixed text-sm">
+                <table class="min-w-full  text-sm">
                     <thead>
-                        <tr class="border-b border-slate-600 text-center">
+                        <tr class="border-b border-slate-600">
                             <th class="py-2 text-left">Name</th>
                             <th class="py-2 text-left">Email</th>
                             <th class="py-2 text-left">Contact</th>
@@ -63,6 +65,12 @@
     </div>
 </div>
 
+@if(_showSidebar && _client is not null)
+{
+    <SaveClientForm Client="_client"
+        OnSidebarClose="HandleSidebarClose"/>
+}
+
 @code {
     private IEnumerable<ClientModel> _clients = [];
 
@@ -71,18 +79,34 @@
         _clients = ClientModel.GetSeedData();
     }
 
+    private bool _showSidebar;
+    private ClientModel? _client;
+
     private void AddNewClient()
     {
-        
+        _client = new();
+        _showSidebar = true;
     }
 
     private void EditClient(ClientModel c)
     {
-        
+        _client = c.Clone();
+        _showSidebar = true;
     }
 
     private void DeleteClient(ClientModel c)
     {
-        
+        var confirmationModel = ConfirmationModel.Create($"Do you want to delete this client '{c.Name}'?" , () => 
+        {
+            // Delete client from db
+        });
+
+        UiService.Confirm(confirmationModel);
+    }
+
+    private void HandleSidebarClose()
+    {
+        _client = null;
+        _showSidebar = false;
     }
 }

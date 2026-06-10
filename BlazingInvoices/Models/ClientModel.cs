@@ -15,6 +15,8 @@ public class ClientModel
     public string ContactNumber { get; set; }
     public string? Remarks { get; set; }
 
+    public ClientModel? Clone() => MemberwiseClone() as ClientModel;
+
     public static IEnumerable<ClientModel> GetSeedData()
     {
         return new[]

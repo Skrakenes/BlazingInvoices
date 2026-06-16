@@ -1,0 +1,113 @@
+@page "/invoices"
+
+<div class="roudned-lg flex w-full flex-col bg-white p-5">
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-medium">Invoice Management</h1>
+
+        <button type="button"
+                class="flex cursor-pointer items-center justify-center gap-2 rounded border border-green-300 bg-green-100 px-3 py-1 hover:bg-green-200"
+                @onclick="AddNewClient">
+            <img src="icons/plus.svg" />
+            <span>Create Invoice</span>
+        </button>
+    </div>
+    <hr class="mt-2 mb-5 w-full text-slate-400" />
+
+    <div class="flex items-center w-full border-b border-slate-400">
+        @foreach (var tab in _tabs)
+        {
+            string activeClasses = "";
+            if (tab.IsActive)
+            {
+                activeClasses = $"border-b-2 bg-{tab.ActiveColor}-50 border-{tab.ActiveColor}-600 text-{tab.ActiveColor}-600";
+            }
+            <button type="button" class="cursor-pointer px-4 py-2 text-sm font-medium @activeClasses" @onclick="() => ChangeTab
+                                (tab)">@tab.Name</button>
+        }
+    </div>
+    <div class="mt-5">
+        @if (!_invoices.Any())
+        {
+            <div class="m-5 p-5 text-center">
+                <p class="text-3xl font-medium text-slate-500">No invoices created yet.</p>
+            </div>
+        }
+        else
+        {
+            <div>
+                <table class="min-w-full  text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-600">
+                            <th class="py-2 text-left">Invoice Number</th>
+                            <th class="py-2 text-left">Client</th>
+                            <th class="py-2 text-left">Issued on</th>
+                            <th class="py-2 text-left">Due on</th>
+                            <th class="py-2 text-left">Status</th>
+                            <th class="py-2 text-left">Total Amount</th>
+                            <th class="py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var invoice in _invoices)
+                        {
+                            <tr class="border-b border-slate-300 hover:bg-slate-50">
+                                <td class="py-2 text-left">@invoice.InvoiceNumber</td>
+                                <td class="py-2 text-left">@invoice.ClientName</td>
+                                <td class="py-2 text-left">@invoice.IssuedOn.ToString("dd-MMM-yyyy")</td>
+                                <td class="py-2 text-left">@invoice.DueOn?.ToString("dd-MMM-yyyy")</td>
+                                <td class="py-2 text-left">@invoice.Status</td>
+                                <td class="py-2 text-left">@invoice.TotalAmount.ToString("C")</td>
+                                <td class="py-2">Actions</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    
+</div>
+
+@code {
+    private void AddNewClient() { }
+
+    private Tab[] _tabs = [
+        new ("Recent", "indigo", true),
+        new ("Pending", "amber"),
+        new ("Paid", "emerald"),
+        new ("All", "blue")
+    ];
+
+    private IEnumerable<InvoiceModel> _invoices = [];
+
+    protected override void OnInitialized()
+    {
+        _invoices = InvoiceSeeder.GetSeedInvoices();
+    }
+
+    private void ChangeTab(Tab tab)
+    {
+        var currentActiveTab = _tabs.First(t => t.IsActive);
+        currentActiveTab.IsActive = false;
+        tab.IsActive = true;
+    }
+
+
+    private class Tab
+    {
+        public Tab(string name, string activeColor, bool isActive = false) =>
+            (Name, ActiveColor, IsActive) = (name, activeColor, isActive);
+
+        public string Name { get; set; }
+        public string ActiveColor { get; set; }
+        public bool IsActive { get; set; }
+    }
+}
+
+<div class="hidden ">
+    <span class="bg-indigo-50 border-indigo-600 text-indigo-600"></span>
+    <span class="bg-amber-50 border-amber-600 text-amber-600"></span>
+    <span class="bg-emerald-50 border-emerald-600 text-emerald-600"></span>
+    <span class="bg-blue-50 border-blue-600 text-blue-600"></span>
+</div>

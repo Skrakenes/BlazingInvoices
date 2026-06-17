@@ -1,10 +1,11 @@
 ﻿<div class="fixed inset-0 top-0 right-0 bottom-0 left-0 z-20">
     <div class="overlay fixed inset-0 top-0 right-0 bottom-0 left-0 bg-black/20" @onclick="OnClose">
-        </div>
-    <div class="absolute top-0 right-0 bottom-0 w-[400px] bg-white shadow-lg">
+    </div>
+    <div class="absolute top-0 right-0 bottom-0 w-[550px] bg-white shadow-lg">
         <div class="flex items-center justify-between px-3 pt-3">
             <h4 class="text-lg font-medium">@Title</h4>
-            <button type="button" class="cursor-pointer rounded-lg border border-slate-300 p-1 hover:bg-red-100" @onclick="OnClose">
+            <button type="button" class="cursor-pointer rounded-lg border border-slate-300 p-1 hover:bg-red-100"
+                    @onclick="OnClose">
                 <img src="icons/x.svg" />
             </button>
         </div>
@@ -17,14 +18,20 @@
         <hr class="mt-6 mb-3 text-slate-100" />
 
         <div class="flex items-center justify-between px-3">
-            <button type="button" class="flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-300 bg-slate-100 px-4 py-1 hover:bg-slate-300" @onclick="OnClose">
+            <button type="button"
+                    class="flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-300 bg-slate-100 px-4 py-1 hover:bg-slate-300"
+                    @onclick="OnClose">
                 <img src="icons/x.svg" />
                 <span>Cancel</span>
             </button>
-            <button type="submit" class="flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-green-400 bg-green-300 px-4 py-1 hover:bg-green-400">
-                <img src="icons/check.svg" />
-                <span>Save</span>
-            </button>
+            @if (ShowSaveButton)
+            {
+                <button type="submit"
+                        class="flex cursor-pointer items-center justify-center gap-1 rounded-lg border border-green-400 bg-green-300 px-4 py-1 hover:bg-green-400">
+                    <img src="icons/check.svg" />
+                    <span>Save</span>
+                </button>
+            }
         </div>
     </div>
 </div>
@@ -38,4 +45,7 @@
 
     [Parameter, EditorRequired]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool ShowSaveButton { get; set; } = true;
 }

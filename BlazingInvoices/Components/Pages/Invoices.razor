@@ -181,19 +181,21 @@
 @code {
 
     private Tab[] _tabs = [
-        new ("Recent", "indigo", true),
-        new ("Pending", "amber"),
-        new ("Paid", "emerald"),
-        new ("All", "blue")
+        new (InvoiceTabTypes.Recent, "indigo", true),
+        new (InvoiceTabTypes.Pending, "amber"),
+        new (InvoiceTabTypes.Paid, "emerald"),
+        new (InvoiceTabTypes.All, "blue")
     ];
 
+    private IEnumerable<InvoiceModel> _allInvoices = [];
     private IEnumerable<InvoiceModel> _invoices = [];
 
     private int? _showLineItemsForInvoiceId;
 
     protected override void OnInitialized()
     {
-        _invoices = InvoiceSeeder.GetSeedInvoices();
+        _allInvoices = InvoiceSeeder.GetSeedInvoices();
+        FilterInvoices(InvoiceTabTypes.Recent);
     }
 
     private void ChangeTab(Tab tab)
@@ -201,8 +203,30 @@
         var currentActiveTab = _tabs.First(t => t.IsActive);
         currentActiveTab.IsActive = false;
         tab.IsActive = true;
+        FilterInvoices(tab.Name);
     }
 
+    private void FilterInvoices(string selectedTabName)
+    {
+        var filteredInvoices = selectedTabName switch
+        {
+            InvoiceTabTypes.Recent => _allInvoices.OrderByDescending(i=> i.Id).Take(5),
+            InvoiceTabTypes.Pending => _allInvoices.Where(i=> !i.IsPaid),
+            InvoiceTabTypes.Paid => _allInvoices.Where(i=> i.IsPaid),
+            InvoiceTabTypes.All => _allInvoices.Take(10),
+            _=> throw new InvalidOperationException()
+        };
+
+        _invoices = [.. filteredInvoices];
+    }
+
+    private class InvoiceTabTypes
+    {
+        public const string Recent = "Recent";
+        public const string Pending = "Pending";
+        public const string Paid = "Paid";
+        public const string All = "All";
+    }
 
     private class Tab
     {

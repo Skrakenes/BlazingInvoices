@@ -1,0 +1,42 @@
+<RightSidePanel Title="@(Invoice.InvoiceNumber + "- Line Items")" OnClose="OnClose" ShowSaveButton="false">
+    <div class="">
+        <table class="min-w-full  text-sm">
+            <thead>
+                <tr class="border-b border-slate-600">
+                    <th class="py-2 text-left">Service</th>
+                    <th class="py-2 text-left">Quantity x Rate</th>
+                    <th class="py-2 text-left">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var li in Invoice.LineItems)
+                {
+                    <tr class="border-b border-slate-100">
+                        <td class="p-2 text-left">@li.ServiceName</td>
+                        <td class="p-2 text-left">
+                            @li.Quantity x @li.Rate.ToString("C") @li.Unit</td>
+                            <td class="p-2 text-left">@li.Amount.ToString("C")</td>
+                        </tr>
+                    }
+                    <tr class="border-t border-slate-200">
+                        <td colspan="2" class="p-2 text-right font-medium">Total Amount</td>
+                        <td class="p-2 text-left">@Invoice.TotalAmount.ToString("C")</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </RightSidePanel>
+
+
+
+
+@code {
+    [Parameter, EditorRequired]
+    public InvoiceModel Invoice { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnClose { get; set; }
+
+    
+}

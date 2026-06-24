@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace BlazingInvoices.Models;
 
 public class InvoiceModel
@@ -12,7 +14,8 @@ public class InvoiceModel
     public bool IsPaid { get; set; }
     public DateTime? PaidOn { get; set; }
     public string Status => IsPaid ? "Paid" : "Pending";
-
+    [MaxLength(250)]
+    public string? Notes { get; set; }
     public IEnumerable<InvoiceLineItemModel> LineItems { get; set; } = [];
     public decimal TotalAmount => LineItems.Sum(l => l.Amount);
 

@@ -1,0 +1,153 @@
+@page "/invoices/create"
+
+<EditForm Model="_model" class="text-slate-600">
+    <DataAnnotationsValidator />
+    <div class="roudned-lg flex w-full flex-col bg-white p-5">
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl font-medium">Create Invoice</h1>
+
+            <button type="button"
+                    class="flex cursor-pointer items-center justify-center gap-2 rounded border border-green-300 bg-green-100 px-3 py-1 hover:bg-green-200">
+                <img src="icons/check.svg" />
+                <span>Save Invoice</span>
+            </button>
+        </div>
+        <hr class="mt-2 mb-5 w-full text-slate-400" />
+
+        <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-2 space-y-4">
+                <div class="rounded border p-3 border-slate-200">
+                    <h4 class="font-medium">Invoice Details</h4>
+                    <div class="space-y-3 mt-5">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="">
+                                <label class="text-xs text-slate-500">Invoice Number</label>
+                                <InputText @bind-value="_model.InvoiceNumber"
+                                           class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm"
+                                           placeholder="Enter invoice number"></InputText>
+                                <ValidationMessage For="() => _model.InvoiceNumber" class="text-xs text-red-500" />
+                            </div>
+                            <div class="col-span-2">
+                                <label class="text-xs text-slate-500">Client</label>
+                                <InputSelect @bind-value="_model.ClientId" @bind-value:after="HandleClientSelection"
+                                             class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm"
+                                             placeholder="Enter invoice number">
+                                    <option value="0">Select Client</option>
+                                    @foreach (var c in _clients)
+                                    {
+                                        <option value="@c.Id">@c.Name</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => _model.ClientId" class="text-xs text-red-500" />
+                            </div>
+
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="">
+                                <label class="text-xs text-slate-500">Issued On</label>
+                                <InputDate @bind-value="_model.IssuedOn"
+                                           class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm"
+                                           placeholder="Issued On"></InputDate>
+                                <ValidationMessage For="() => _model.IssuedOn" class="text-xs text-red-500" />
+                            </div>
+                            <div class="">
+                                <label class="text-xs text-slate-500">Due On</label>
+                                <InputDate @bind-value="_model.DueOn"
+                                           class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm"
+                                           placeholder="Due On"></InputDate>
+                                <ValidationMessage For="() => _model.DueOn" class="text-xs text-red-500" />
+                            </div>
+                            <div class="">
+                                <label class="text-xs text-slate-500">Status</label>
+                                <InputSelect @bind-value="_invoiceIsPaid" @bind-value:after="HandleIsPaidChanged"
+                                             class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm">
+                                    <option value="@bool.FalseString">Unpaid/Pending</option>
+                                    <option value="@bool.TrueString">Paid</option>
+                                </InputSelect>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="">
+                                <label class="text-xs text-slate-500">Notes</label>
+                                <InputText @bind-value="_model.Notes"
+                                           class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm"
+                                           placeholder="Notes"></InputText>
+                                <ValidationMessage For="() => _model.Notes" class="text-xs text-red-500" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded border p-3 border-slate-200">
+                    <h4>Line Items</h4>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="rounded border p-3 border-slate-200">
+                    <h4 class="font-medium mb-3 text-xl">Our Buisness Info</h4>
+                    <div class="flex flex-col gap-1">
+                        <label class="font-medium">@_settings.BuisnessName</label>
+                        <label class="text-sm">@_settings.EmailId</label>
+                        @if (!string.IsNullOrWhiteSpace(_settings.ContactNumber))
+                        {
+                            <label class="text-sm">@_settings.ContactNumber</label>
+                        }
+                        <label class="text-sm">@_settings.Address</label>
+                    </div>
+                </div>
+                <div class="rounded border p-3 border-slate-200">
+                    <h4 class="font-medium mb-3 text-xl">Selected Client</h4>
+                    @if (_selectedClient is null)
+                    {
+                        <p class="text-xl text-center py-5 text-slate-400">No Client Selected</p>
+                    }
+                    else
+                    {
+                        <div class="flex flex-col gap-1">
+                            <label class="font-medium ">@_selectedClient.Name</label>
+                            <label class="text-sm">@_selectedClient.EmailId</label>
+                            <label class="text-sm">@_selectedClient.ContactNumber</label>
+                        </div>
+                    }
+                </div>
+                <div class="rounded border p-3 border-slate-200">
+                    <h4>Total and Save button</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private InvoiceModel _model = new();
+
+    private IEnumerable<ClientModel> _clients = [];
+    private IEnumerable<ServiceModel> _services = [];
+
+    private SettingsModel _settings = new();
+    protected override void OnInitialized()
+    {
+        _model.IssuedOn = DateTime.Now.Date;
+        _clients = ClientModel.GetSeedData();
+        _services = ServiceModel.GetSeedData();
+
+        _settings.BuisnessName = "test name";
+        _settings.EmailId = "test@gmail.com";
+        _settings.ContactNumber = "12345678";
+        _settings.Address = "test address";
+    }
+
+    private ClientModel? _selectedClient;
+    private void HandleClientSelection()
+    {
+        if (_model.ClientId == 0)
+            _selectedClient = null;
+
+        _selectedClient = _clients.FirstOrDefault(c => c.Id == _model.ClientId);
+    }
+
+    private string _invoiceIsPaid = bool.FalseString;
+    private void HandleIsPaidChanged() => _model.IsPaid = _invoiceIsPaid == bool.TrueString;
+
+        
+}

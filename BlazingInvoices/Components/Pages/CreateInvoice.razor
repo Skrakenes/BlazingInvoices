@@ -78,7 +78,58 @@
                     </div>
                 </div>
                 <div class="rounded border p-3 border-slate-200">
-                    <h4>Line Items</h4>
+                    <div class="flex justify-between items-center">
+                        <h4 class=font-medium">Line Items</h4>
+                        <button type="button" @onclick="AddLineItem" class="px-3 py-1 bg-green-300 border border-green-400 hover:bg-green-400 cursor-pointer">
+                            + Add Line Item
+                        </button>
+                    </div>
+                    <div class="mt-5">
+                        <table class="">
+                            <thead>
+                                <tr>
+                                    <th class="text-left py-2">Product/Service</th>
+                                    <th class="text-left py-2">Quantity</th>
+                                    <th class="text-right py-2">Rate</th>
+                                    <th class="text-right py-2">Amount</th>
+                                    <th class="text-center py-2">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach( var li in _model.LineItems)
+                                {
+                                    <tr>
+                                        <td class="py-2">
+                                            <InputSelect @bind-Value="li.ServiceId" @bind-Value:after="HandleIsPaidChanged"
+                                                class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+                                                <option value="0">Select Service</option>
+                                                @foreach (var s in _services)
+                                                {
+                                                    <option value="@s.Id">@s.Name</option>
+                                                }
+                                            </InputSelect>
+
+                                        </td>
+                                        <td class="py-2">
+                                            <InputNumber @bind-value="li.Quantity" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm" placeholder="Quantity"></InputNumber>                                        
+                                        </td>
+                                        <td class="py-2">
+                                            rate
+                                        </td>
+                                        <td class="py-2">
+                                            Amount
+                                        </td>
+                                        <td class="py-2">
+                                            <button type="button" class="cursor-pointer p-2 border border-red-300 bg-red-200 hover:bg-red-400"
+                                            @onclick="() => RemoveLineItem(li)">
+                                                <img src="icons/x.svg" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -135,6 +186,8 @@
         _settings.EmailId = "test@gmail.com";
         _settings.ContactNumber = "12345678";
         _settings.Address = "test address";
+
+        _model.LineItems.Add(new());
     }
 
     private ClientModel? _selectedClient;
@@ -149,5 +202,7 @@
     private string _invoiceIsPaid = bool.FalseString;
     private void HandleIsPaidChanged() => _model.IsPaid = _invoiceIsPaid == bool.TrueString;
 
-        
+    private void RemoveLineItem(InvoiceLineItemModel li) => _model.LineItems.Remove(li);
+    private void AddLineItem() => _model.LineItems.Add(new());
+
 }

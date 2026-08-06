@@ -16,7 +16,7 @@ public class InvoiceModel
     public string Status => IsPaid ? "Paid" : "Pending";
     [MaxLength(250)]
     public string? Notes { get; set; }
-    public IEnumerable<InvoiceLineItemModel> LineItems { get; set; } = [];
+    public ICollection<InvoiceLineItemModel> LineItems { get; set; } = [];
     public decimal TotalAmount => LineItems.Sum(l => l.Amount);
 
 }

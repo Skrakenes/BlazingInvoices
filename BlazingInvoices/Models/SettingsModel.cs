@@ -15,4 +15,6 @@ public class SettingsModel
 
     [MaxLength(250)]
     public string? Address { get; set; }
+
+    public double TaxPercentage { get; set; }
 }

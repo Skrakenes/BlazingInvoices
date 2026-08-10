@@ -48,6 +48,10 @@ builder.Services.AddScoped<UiService>();
 
 var app = builder.Build();
 
+#if DEBUG
+AutoMigrateDb(app.Services);
+#endif
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -72,3 +76,10 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();
+
+static void AutoMigrateDb(IServiceProvider sp)
+{
+    using var scope = sp.CreateScope();
+    using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+}

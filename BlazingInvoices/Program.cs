@@ -5,6 +5,7 @@ using BlazingInvoices.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,7 @@ var app = builder.Build();
 
 #if DEBUG
 AutoMigrateDb(app.Services);
+SeedUserAsync(app.Services).GetAwaiter().GetResult();
 #endif
 
 // Configure the HTTP request pipeline.
@@ -82,4 +84,35 @@ static void AutoMigrateDb(IServiceProvider sp)
     using var scope = sp.CreateScope();
     using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     context.Database.Migrate();
+}
+
+static async Task SeedUserAsync(IServiceProvider sp)
+{
+    using var scope = sp.CreateScope();
+    using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    if (context.Users.Any())
+        return;
+
+    var userStore = scope.ServiceProvider.GetRequiredService<IUserStore<ApplicationUser>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    var user = Activator.CreateInstance<ApplicationUser>();
+
+    user.Name = "Test User";
+    user.TaxPercentage = 5;
+    user.BuisnessName = "Test Business";
+    user.BusinessEmailId = "mybiz@test.com";
+    user.BusinessContactNumber = "12345678";
+    user.BusinessAddress = "123 Test Street";
+
+    var email = "test@test.com";
+    var password = "Test123!";
+
+    await userStore.SetUserNameAsync(user, email, CancellationToken.None);
+
+    var emailStore = (IUserEmailStore<ApplicationUser>)userStore;
+    await emailStore.SetEmailAsync(user, email, CancellationToken.None);
+
+    var result = await userManager.CreateAsync(user, password);
 }

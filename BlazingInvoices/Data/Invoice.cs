@@ -27,7 +27,7 @@ public class Invoice
 
     #region ---- Our Business Info ----
     [Required, MaxLength(200)]
-    public string BuisnessName { get; set; }
+    public string BusinessName { get; set; }
 
     [Required, EmailAddress, MaxLength(200)]
     public string BusinessEmailId { get; set; }

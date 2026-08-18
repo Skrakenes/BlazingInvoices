@@ -101,7 +101,7 @@ static async Task SeedUserAsync(IServiceProvider sp)
 
     user.Name = "Test User";
     user.TaxPercentage = 5;
-    user.BuisnessName = "Test Business";
+    user.BusinessName = "Test Business";
     user.BusinessEmailId = "mybiz@test.com";
     user.BusinessContactNumber = "12345678";
     user.BusinessAddress = "123 Test Street";

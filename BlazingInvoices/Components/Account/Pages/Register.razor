@@ -7,6 +7,8 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using BlazingInvoices.Data
 
+@layout AuthLayout
+
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
@@ -17,42 +19,79 @@
 
 <PageTitle>Register</PageTitle>
 
-<h1>Register</h1>
+<SectionContent SectionName="header">
+    <h1 class="text-center text-2xl font-medium">Register</h1>
+</SectionContent>
 
-<div class="row">
-    <div class="col-lg-6">
-        <StatusMessage Message="@Message" />
-        <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
-            <DataAnnotationsValidator />
-            <h2>Create a new account.</h2>
-            <hr />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label for="Input.Email">Email</label>
-                <ValidationMessage For="() => Input.Email" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="Input.Password">Password</label>
-                <ValidationMessage For="() => Input.Password" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="Input.ConfirmPassword">Confirm Password</label>
-                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </EditForm>
+<StatusMessage Message="@Message" />
+ <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
+    <DataAnnotationsValidator />
+
+    <div class="w-[550px] grid grid-cols-2 gap-3 p-2">
+        <div class="">
+            <label class="text-xs text-slate-500">Name</label>
+            <InputText @bind-value="Input.Name" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Name" autocomplete="username webauthn"></InputText>
+            <ValidationMessage For="() => Input.Name" class="text-xs text-red-500" />
+        </div>
+        <div class="">
+            <label class="text-xs text-slate-500">Email</label>
+            <InputText @bind-value="Input.Email" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Email" autocomplete="username webauthn"></InputText>
+            <ValidationMessage For="() => Input.Email" class="text-xs text-red-500" />
+        </div>
+        <div class="">
+            <label class="text-xs text-slate-500">Password</label>
+            <InputText type="password" @bind-value="Input.Password" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter password" autocomplete="current-password"></InputText>
+            <ValidationMessage For="() => Input.Password" class="text-xs text-red-500" />
+        </div>
+        <div class="">
+            <label class="text-xs text-slate-500">Confirm Password</label>
+            <InputText type="password" @bind-value="Input.ConfirmPassword" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Confirm password" autocomplete="current-password"></InputText>
+            <ValidationMessage For="() => Input.ConfirmPassword" class="text-xs text-red-500" />
+        </div>
+
+        <div class="">
+            <label class="text-xs text-slate-500">Business Name</label>
+            <InputText @bind-value="Input.BusinessName" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Business Name"></InputText>
+            <ValidationMessage For="() => Input.BusinessName" class="text-xs text-red-500" />
+        </div>
+        <div class="">
+            <label class="text-xs text-slate-500">Business Email Id</label>
+            <InputText  @bind-value="Input.BusinessEmailId" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Business Email Id" ></InputText>
+            <ValidationMessage For="() => Input.BusinessEmailId" class="text-xs text-red-500" />
+        </div>
+        <div class="">
+            <label class="text-xs text-slate-500">Business Contact Number</label>
+            <InputText  @bind-value="Input.BusinessContactNumber" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Business Contact Number" ></InputText>
+            <ValidationMessage For="() => Input.BusinessContactNumber" class="text-xs text-red-500" />
+        </div>
+        <div class="">
+            <label class="text-xs text-slate-500">Tax Percentage</label>
+            <InputNumber  @bind-value="Input.TaxPercentage" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Tax Percentag"></InputNumber>
+            <ValidationMessage For="() => Input.TaxPercentage" class="text-xs text-red-500" />
+        </div>
+        <div class="col-span-2">
+            <label class="text-xs text-slate-500">Business Address</label>
+            <InputText @bind-value="Input.BusinessAddress" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Business Address" ></InputText>
+            <ValidationMessage For="() => Input.BusinessAddress" class="text-xs text-red-500" />
+        </div>
+
+        <div class="col-span-2">
+            <hr class="text-slate-100" />
+
+            <button type="submit"
+                    class="flex w-full cursor-pointer items-center justify-center gap-1 rounded-lg border border-green-400 bg-green-300 px-4 py-1 hover:bg-green-400">
+                <img src="icons/check.svg" />
+                <span>Register</span>
+            </button>
+            <hr class="text-slate-100 my-2" />
+            <NavLink href="account/login" class="w-full text-center underline text-blue-500 hover\:text-blue-800 cursor-pointer p-3">
+                Already have an Account? Login here
+            </NavLink>
+        </div>
+
     </div>
-    <div class="col-lg-4 col-lg-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
-    </div>
-</div>
+</EditForm>
+
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
@@ -87,33 +126,23 @@
 
         Logger.LogInformation("User created a new account with password.");
 
-        var userId = await UserManager.GetUserIdAsync(user);
-        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
-            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
-            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
-
-        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
-        if (UserManager.Options.SignIn.RequireConfirmedAccount)
-        {
-            RedirectManager.RedirectTo(
-                "Account/RegisterConfirmation",
-                new() { ["email"] = Input.Email, ["returnUrl"] = ReturnUrl });
-        }
-        else
-        {
-            await SignInManager.SignInAsync(user, isPersistent: false);
-            RedirectManager.RedirectTo(ReturnUrl);
-        }
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        RedirectManager.RedirectTo(ReturnUrl);
     }
 
     private ApplicationUser CreateUser()
     {
         try
         {
-            return Activator.CreateInstance<ApplicationUser>();
+            var user =  Activator.CreateInstance<ApplicationUser>();
+
+            user.Name = Input.Name;
+            user.BusinessName = Input.BusinessName;
+            user.BusinessAddress = Input.BusinessAddress;
+            user.BusinessContactNumber = Input.BusinessContactNumber;
+            user.BusinessEmailId = Input.BusinessEmailId;
+
+            return user;
         }
         catch
         {
@@ -148,5 +177,22 @@
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
+
+        [Required, MaxLength(50)]
+        public string Name { get; set; }
+
+        [Required, MaxLength(200)]
+        public string BusinessName { get; set; }
+
+        [Required, EmailAddress, MaxLength(200)]
+        public string BusinessEmailId { get; set; }
+
+        [MaxLength(15)]
+        public string? BusinessContactNumber { get; set; }
+
+        [MaxLength(250)]
+        public string? BusinessAddress { get; set; }
+
+        public double TaxPercentage { get; set; }
     }
 }

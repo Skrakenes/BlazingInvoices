@@ -30,11 +30,6 @@ namespace BlazingInvoices.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("BuisnessName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<string>("BusinessAddress")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
@@ -44,6 +39,11 @@ namespace BlazingInvoices.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("BusinessEmailId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("BusinessName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -159,11 +159,6 @@ namespace BlazingInvoices.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BuisnessName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<string>("BusinessAddress")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
@@ -173,6 +168,11 @@ namespace BlazingInvoices.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.Property<string>("BusinessEmailId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("BusinessName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");

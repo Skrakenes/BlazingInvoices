@@ -23,7 +23,7 @@
 <EditForm EditContext="editContext" method="post" OnSubmit="LoginUser" FormName="login">
     <DataAnnotationsValidator />
 
-    <div class="space-y-3">
+    <div class="space-y-3 p-2">
         <div class="">
             <label class="text-xs text-slate-500">Email</label>
             <InputText @bind-value="Input.Email" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter Email" autocomplete="username webauthn"></InputText>
@@ -31,7 +31,7 @@
         </div>
         <div class="">
             <label class="text-xs text-slate-500">Password</label>
-            <InputText typeof="password" @bind-value="Input.Password" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter password" autocomplete="current-password"></InputText>
+            <InputText type="password" @bind-value="Input.Password" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm" placeholder="Enter password" autocomplete="current-password"></InputText>
             <ValidationMessage For="() => Input.Password" class="text-xs text-red-500" />
         </div>
         <hr class="text-slate-100" />
@@ -41,6 +41,10 @@
             <img src="icons/check.svg" />
             <span>Login</span>
         </button>
+        <hr class="text-slate-100 my-2" />
+        <NavLink href="account/register" class="w-full text-center underline text-blue-500 hover\:text-blue-800 cursor-pointer p-3">
+            Do not have an Account? Register here    
+        </NavLink>
     </div>
 </EditForm>
 
@@ -72,47 +76,19 @@
 
     public async Task LoginUser()
     {
-        if (!string.IsNullOrEmpty(Input.Passkey?.Error))
+        
+        if (!editContext.Validate())
         {
-            errorMessage = $"Error: {Input.Passkey.Error}";
             return;
         }
 
-        SignInResult result;
-        if (!string.IsNullOrEmpty(Input.Passkey?.CredentialJson))
-        {
-            // When performing passkey sign-in, don't perform form validation.
-            result = await SignInManager.PasskeySignInAsync(Input.Passkey.CredentialJson);
-        }
-        else
-        {
-            // If doing a password sign-in, validate the form.
-            if (!editContext.Validate())
-            {
-                return;
-            }
-
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-            result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-        }
-
+        SignInResult result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
             RedirectManager.RedirectTo(ReturnUrl);
         }
-        else if (result.RequiresTwoFactor)
-        {
-            RedirectManager.RedirectTo(
-                "Account/LoginWith2fa",
-                new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
-        }
-        else if (result.IsLockedOut)
-        {
-            Logger.LogWarning("User account locked out.");
-            RedirectManager.RedirectTo("Account/Lockout");
-        }
+
         else
         {
             errorMessage = "Error: Invalid login attempt.";
@@ -131,7 +107,5 @@
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
-
-        public PasskeyInputModel? Passkey { get; set; }
     }
 }

@@ -5,7 +5,7 @@ namespace BlazingInvoices.Models;
 public class SettingsModel
 {
     [Required, MaxLength(200)]
-    public string BuisnessName { get; set; }
+    public string BusinessName { get; set; }
 
     [Required, EmailAddress, MaxLength(200)]
     public string EmailId { get; set; }

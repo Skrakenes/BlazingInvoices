@@ -9,7 +9,7 @@ public class ApplicationUser : IdentityUser
     public string Name { get; set; }
 
     [Required, MaxLength(200)]
-    public string BuisnessName { get; set; }
+    public string BusinessName { get; set; }
 
     [Required, EmailAddress, MaxLength(200)]
     public string BusinessEmailId { get; set; }

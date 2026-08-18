@@ -140,7 +140,7 @@
                 <div class="rounded border p-3 border-slate-200">
                     <h4 class="font-medium mb-3 text-xl">Our Buisness Info</h4>
                     <div class="flex flex-col gap-1">
-                        <label class="font-medium">@_settings.BuisnessName</label>
+                        <label class="font-medium">@_settings.BusinessName</label>
                         <label class="text-sm">@_settings.EmailId</label>
                         @if (!string.IsNullOrWhiteSpace(_settings.ContactNumber))
                         {
@@ -202,7 +202,7 @@
         _clients = ClientModel.GetSeedData();
         _services = ServiceModel.GetSeedData();
 
-        _settings.BuisnessName = "test name";
+        _settings.BusinessName = "test name";
         _settings.EmailId = "test@gmail.com";
         _settings.ContactNumber = "12345678";
         _settings.Address = "test address";

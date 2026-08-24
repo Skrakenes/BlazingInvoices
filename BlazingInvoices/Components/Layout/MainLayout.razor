@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Security.Claims
+@inherits LayoutComponentBase
 
 <div class="flex min-h-screen flex-col">
 
@@ -11,19 +12,22 @@
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2">
                     <img src="icons/user.svg" />
-                    <label class="font-medium">Test</label>
+                    <label class="font-medium">@_userDisplayName</label>
                 </div>
-                <button type="button" class="flex cursor-pointer items-center gap-2 rounded-lg border border-rose-300 bg-rose-50 px-3
-                 py-1 text-rose-700 hover:bg-rose-100">
-                    <img src="icons/log-out.svg" />
-                    <span>Logout</span>
-             </button>
+                <EditForm method="post" action="/account/logout" Model="_logoutModel">
+                   <InputText type="hidden" @bind-Value="_logoutModel.ReturnUrl"/>
+                    <button type="submit" class="flex cursor-pointer items-center gap-2 rounded-lg border border-rose-300 bg-rose-50 px-3
+                        py-1 text-rose-700 hover:bg-rose-100">
+                        <img src="icons/log-out.svg" />
+                        <span>Logout</span>
+                    </button>
+               </EditForm>
             </div>
         </div>
     </div>
 
     <div class="flex flex-1">
-        <LeftNavbar />
+        <LeftNavbar BusinessName="@_businessNme" />
         <div class="flex-1 p-5">
             @Body
         </div>
@@ -39,3 +43,40 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+
+@code 
+{
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthStateTask { get; set; }
+
+    private string _userDisplayName = "";
+    private string _businessNme = "";
+
+    private LogoutModel _logoutModel = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateTask;
+
+        var isLoggedIn = authState?.User.Identity?.IsAuthenticated is true;
+
+        if(!isLoggedIn)
+        {
+            NavigationManager.NavigateTo("account/login", forceLoad: true, replace: true);
+            return;
+        }
+
+        var userId = authState!.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        (_userDisplayName, _businessNme) = await UserService.GetUserInfoAsync(userId!);
+    }
+
+    private class LogoutModel
+    {
+        public string ReturnUrl { get; set; } = "account/login";
+    }
+}

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazingInvoices.Models;
 
-public class SettingsModel
+public class BusinessInfoModel
 {
     [Required, MaxLength(200)]
     public string BusinessName { get; set; }

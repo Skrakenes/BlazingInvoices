@@ -1,3 +1,4 @@
+@inject UserService UserService
 <EditForm Model="_model" OnValidSubmit="HandleSaveAsync">
     <DataAnnotationsValidator />
     <div class="fixed inset-0 z-30 flex items-center justify-center">
@@ -66,14 +67,27 @@
 </EditForm>
 
 @code {
+
+    [CascadingParameter(Name = nameof(MainLayout.UserId))]
+    public required string UserId { get; set; }
+
     [Parameter]
     public EventCallback OnClose { get; set; }
 
-    private SettingsModel _model = new();
+    [Parameter]
+    public EventCallback<string> OnSaveBusinessName { get; set; }
+
+    private BusinessInfoModel _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = await UserService.GetBusinessInfoAsync(UserId);
+    }
 
     private async Task HandleSaveAsync()
     {
-        //Save settings in db
+        await UserService.SaveBusinessInfoAsync(UserId, _model);
+        await OnSaveBusinessName.InvokeAsync(_model.BusinessName);
         await OnClose.InvokeAsync();
     }
 }

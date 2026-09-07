@@ -1,42 +1,39 @@
 ﻿@using System.Security.Claims
 @inherits LayoutComponentBase
 
-<div class="flex min-h-screen flex-col">
-
-    <div class="topbar sticky top-0 z-10 w-full border-b border-slate-200 bg-white">
-        <div class="flex items-center justify-between gap-3 px-4 py-3">
-            <div class="flex items-center gap-3">
-                <img src="icons/hand-coins.svg"/>
-                <h2 class="text-xl font-bold">Blazing Invoice</h2>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2">
-                    <img src="icons/user.svg" />
-                    <label class="font-medium">@_userDisplayName</label>
+<CascadingValue Value="@UserId" Name="@nameof(MainLayout.UserId)">
+     <div class="flex min-h-screen flex-col">
+        <div class="topbar sticky top-0 z-10 w-full border-b border-slate-200 bg-white">
+            <div class="flex items-center justify-between gap-3 px-4 py-3">
+                <div class="flex items-center gap-3">
+                    <img src="icons/hand-coins.svg"/>
+                    <h2 class="text-xl font-bold">Blazing Invoice</h2>
                 </div>
-                <EditForm method="post" action="/account/logout" Model="_logoutModel">
-                   <InputText type="hidden" @bind-Value="_logoutModel.ReturnUrl"/>
-                    <button type="submit" class="flex cursor-pointer items-center gap-2 rounded-lg border border-rose-300 bg-rose-50 px-3
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <img src="icons/user.svg" />
+                        <label class="font-medium">@_userDisplayName</label>
+                    </div>
+
+                    <button type="button" @onclick="Logout" class="flex cursor-pointer items-center gap-2 rounded-lg border border-rose-300 bg-rose-50 px-3
                         py-1 text-rose-700 hover:bg-rose-100">
                         <img src="icons/log-out.svg" />
                         <span>Logout</span>
                     </button>
-               </EditForm>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-1">
+            <LeftNavbar BusinessName="@_businessNme" />
+            <div class="flex-1 p-5">
+                @Body
             </div>
         </div>
     </div>
 
-    <div class="flex flex-1">
-        <LeftNavbar BusinessName="@_businessNme" />
-        <div class="flex-1 p-5">
-            @Body
-        </div>
-    </div>
-
-
-</div>
-
-<ConfirmationDialog />
+    <ConfirmationDialog />
+</CascadingValue>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -55,8 +52,7 @@
     private string _userDisplayName = "";
     private string _businessNme = "";
 
-    private LogoutModel _logoutModel = new();
-
+    public string UserId { get; private set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,13 +66,12 @@
             return;
         }
 
-        var userId = authState!.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        UserId = authState!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        (_userDisplayName, _businessNme) = await UserService.GetUserInfoAsync(userId!);
+        (_userDisplayName, _businessNme) = await UserService.GetUserInfoAsync(UserId!);
     }
 
-    private class LogoutModel
-    {
-        public string ReturnUrl { get; set; } = "account/login";
-    }
+    private void Logout() => 
+        NavigationManager.NavigateTo("account/logout", forceLoad: true, replace: true);
+
 }

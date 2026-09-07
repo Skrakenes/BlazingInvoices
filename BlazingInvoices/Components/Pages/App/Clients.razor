@@ -4,7 +4,7 @@
 
 <div class="roudned-lg flex w-full flex-col bg-white p-5">
     <div class="flex items-center justify-between">
-        <h1 class="text-xl font-medium">Client Management</h1>
+        <h1 class="text-xl font-medium">Client Management - @UserId</h1>
 
         <button type="button" class="flex cursor-pointer items-center justify-center gap-2 rounded border border-green-300 bg-green-100 px-3 py-1 hover:bg-green-200"
                 @onclick="AddNewClient">
@@ -72,6 +72,10 @@
 }
 
 @code {
+
+    [CascadingParameter(Name = nameof(MainLayout.UserId))]
+    public required string UserId { get; set; }
+
     private IEnumerable<ClientModel> _clients = [];
 
     protected override void OnInitialized()

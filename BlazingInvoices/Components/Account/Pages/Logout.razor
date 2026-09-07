@@ -1,4 +1,14 @@
-﻿
-@code {
+﻿@page "/account/Logout"
 
+@using BlazingInvoices.Data
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await SignInManager.SignOutAsync();
+        NavigationManager.NavigateTo("account/login", replace: true);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿@page "/services"
 
 @inject UiService UiService
+@inject ProductService ProductService
 
 <div class="roudned-lg flex w-full flex-col bg-white p-5">
     <div class="flex items-center justify-between">
@@ -58,18 +59,23 @@
 @if(_showSidebar && _model is not null)
 {
     <SaveServiceForm Service="_model" 
-        OnSidebarClose="HandleSideBarClosed"/>
+        OnSidebarClose="HandleSideBarClosed"
+        OnSave="HandleServiceSaved"/>
 }
 
 @code {
-    private IEnumerable<ServiceModel> _services = [];
+    [CascadingParameter(Name = nameof(MainLayout.UserId))]
+    public required string UserId { get; set; }
+
+    private List<ServiceModel> _services = [];
 
     private bool _showSidebar = false;
     private ServiceModel? _model = null;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        _services = ServiceModel.GetSeedData();
+        // _services = ServiceModel.GetSeedData();
+        _services = [..await ProductService.GetServicesAsync(UserId)];
     }
 
     private void AddNewService()
@@ -90,11 +96,32 @@
         _showSidebar = false;
     }
 
+    private void HandleServiceSaved(ServiceModel savedService)
+    {
+        // inserted a new savedService
+        if(_model!.Id == 0)
+        {
+            _services = [savedService, .. _services];
+        }
+        // updated existing service
+        else
+        {
+            var existingItemIndex = _services.FindIndex(savedService => savedService.Id == savedService.Id);
+            _services[existingItemIndex] = savedService;
+        }
+        HandleSideBarClosed();
+        InvokeAsync(StateHasChanged);
+    }
+
     private void DeleteService(ServiceModel service)
     {
-        var confirmationModel =  ConfirmationModel.Create($"Do you want to delete '{service.Name}' service?", () =>
+        var confirmationModel =  ConfirmationModel.Create($"Do you want to delete '{service.Name}' service?", 
+        async () =>
         {
             // On yes make service call to delete service from database
+            await ProductService.DeleteAsync(UserId, service.Id);
+            _services.Remove(service);
+            await InvokeAsync(StateHasChanged);
         });
         UiService.Confirm(confirmationModel);
     }

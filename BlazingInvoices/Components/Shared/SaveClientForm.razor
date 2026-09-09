@@ -1,5 +1,6 @@
+@inject ClientService ClientService
 
-<EditForm Model="_model">
+<EditForm Model="_model" OnValidSubmit="HandleSaveClientAsync">
     <DataAnnotationsValidator/>
     <RightSidePanel Title="@(_model.Id == 0 ? "Add Client" : "Edit Client")"
             OnClose="OnSidebarClose">
@@ -33,11 +34,17 @@
 </EditForm>
 
 @code {
-        [Parameter, EditorRequired]
+    [CascadingParameter(Name = nameof(MainLayout.UserId))]
+    public required string UserId { get; set; }
+
+    [Parameter, EditorRequired]
     public ClientModel Client { get; set;}
 
     [Parameter]
     public EventCallback OnSidebarClose { get; set; }
+
+    [Parameter]
+    public EventCallback<ClientModel> OnSave { get; set; }
 
     private ClientModel _model = new();
 
@@ -49,5 +56,11 @@
             // Edit case, populate _model from service parameter
             _model = Client.Clone()!;
         }
+    }
+
+    private async Task HandleSaveClientAsync()
+    {
+        var savedClient = await ClientService.SaveAsync(UserId, _model);
+        await OnSave.InvokeAsync(savedClient);
     }
 }

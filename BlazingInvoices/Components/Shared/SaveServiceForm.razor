@@ -1,7 +1,7 @@
 ﻿@inject ProductService ProductService
 <EditForm Model="_model" OnValidSubmit="HandleSaveServiceAsync">
     <DataAnnotationsValidator />
-    <RightSidePanel Title="Add Service"
+    <RightSidePanel Title="@(_model.Id == 0 ? "Add Service" : "Edit Service")"
                     OnClose="OnSidebarClose">
         <div class="space-y-3">
             <div class="">

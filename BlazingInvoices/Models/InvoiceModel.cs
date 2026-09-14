@@ -2,12 +2,36 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazingInvoices.Models;
 
-public class InvoiceModel
+[ValidatableType]
+public class InvoiceModel : IValidatableObject
 {
     public int Id { get; set; }
+
+    [Required]
     public string InvoiceNumber { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Client selection is required")]
     public int ClientId { get; set; }
+
+    #region ------- Client -------
     public string ClientName { get; set; }
+
+    public string ClientEmailId { get; set; }
+
+    public string ClientContactNumber { get; set; }
+    #endregion
+
+    #region ---- Our Business Info ----
+    public string BusinessName { get; set; }
+
+    public string BusinessEmailId { get; set; }
+
+    public string? BusinessContactNumber { get; set; }
+
+    public string? BusinessAddress { get; set; }
+
+    public double TaxPercentage { get; set; }
+    #endregion
 
     public DateTime IssuedOn { get; set; }
     public DateTime? DueOn { get; set; }
@@ -16,17 +40,39 @@ public class InvoiceModel
     public string Status => IsPaid ? "Paid" : "Pending";
     [MaxLength(250)]
     public string? Notes { get; set; }
+
     public ICollection<InvoiceLineItemModel> LineItems { get; set; } = [];
+
+    // UI only prop to show validation errors on the lineitems
+    public string? LineItemsErrors { get; set; }
+
     public decimal TotalAmount => LineItems.Sum(l => l.Amount);
 
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (IssuedOn == default || IssuedOn == DateTime.MinValue)
+            yield return new ValidationResult("Invalid issued on date", [nameof(IssuedOn)]);
+
+        if (DueOn.HasValue && DueOn < IssuedOn)
+            yield return new ValidationResult("Due date cannot be less than Issued date", [nameof(DueOn)]);
+
+        if (LineItems.Count == 0)
+            yield return new ValidationResult("Atleast 1 line item should be selected", [nameof(LineItemsErrors)]);
+    }
 }
 
 public class InvoiceLineItemModel
 {
+    [Range(1, int.MaxValue, ErrorMessage = "Service selection is required")]
     public int ServiceId { get; set; }
     public string ServiceName { get; set; }
     public decimal Rate { get; set; }
+
+    [Required]
     public string Unit { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Quantity is required")]
     public int Quantity { get; set; }
 
     public decimal Amount => Rate * Quantity;

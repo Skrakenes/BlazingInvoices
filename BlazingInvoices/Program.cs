@@ -50,8 +50,10 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 builder.Services.AddScoped<UiService>()
                 .AddScoped<UserService>()
                 .AddScoped<ProductService>()
-                .AddScoped<ClientService>();
+                .AddScoped<ClientService>()
+                .AddScoped<InvoiceService>();
 
+builder.Services.AddValidation();
 
 var app = builder.Build();
 

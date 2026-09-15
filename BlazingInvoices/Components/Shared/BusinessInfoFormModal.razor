@@ -1,4 +1,6 @@
 @inject UserService UserService
+@inject UiService UiService
+
 <EditForm Model="_model" OnValidSubmit="HandleSaveAsync">
     <DataAnnotationsValidator />
     <div class="fixed inset-0 z-30 flex items-center justify-center">
@@ -81,13 +83,17 @@
 
     protected override async Task OnInitializedAsync()
     {
+        UiService.ShowLoader("Fetching business info"); 
         _model = await UserService.GetBusinessInfoAsync(UserId);
+        UiService.HideLoader();
     }
 
     private async Task HandleSaveAsync()
     {
+        UiService.ShowLoader("Saving business info");
         await UserService.SaveBusinessInfoAsync(UserId, _model);
         await OnSaveBusinessName.InvokeAsync(_model.BusinessName);
         await OnClose.InvokeAsync();
+        UiService.HideLoader();
     }
 }

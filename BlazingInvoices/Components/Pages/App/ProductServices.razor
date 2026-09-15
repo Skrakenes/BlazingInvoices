@@ -75,7 +75,9 @@
     protected override async Task OnInitializedAsync()
     {
         // _services = ServiceModel.GetSeedData();
+        UiService.ShowLoader("Fetching services");
         _services = [..await ProductService.GetServicesAsync(UserId)];
+        UiService.HideLoader();
     }
 
     private void AddNewService()
@@ -119,9 +121,13 @@
         async () =>
         {
             // On yes make service call to delete service from database
+            UiService.ShowLoader("Deleting service");
+
             await ProductService.DeleteAsync(UserId, service.Id);
             _services.Remove(service);
             await InvokeAsync(StateHasChanged);
+
+            UiService.HideLoader();
         });
         UiService.Confirm(confirmationModel);
     }

@@ -1,4 +1,5 @@
-﻿@inject ProductService ProductService
+﻿@inject UiService UiService
+@inject ProductService ProductService
 <EditForm Model="_model" OnValidSubmit="HandleSaveServiceAsync">
     <DataAnnotationsValidator />
     <RightSidePanel Title="@(_model.Id == 0 ? "Add Service" : "Edit Service")"
@@ -62,7 +63,9 @@
 
     private async Task HandleSaveServiceAsync()
     {
+        UiService.ShowLoader("Saving service");
         var savedService = await ProductService.SaveAsync(UserId, _model);
         await OnSave.InvokeAsync(savedService);
+        UiService.HideLoader();
     }
 }

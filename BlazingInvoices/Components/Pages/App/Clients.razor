@@ -83,7 +83,9 @@
     protected override async Task OnInitializedAsync()
     {
         //_clients = ClientModel.GetSeedData();
+        UiService.ShowLoader("Fetching clients");
         _clients = [..await ClientService.GetClientsAsync(UserId)];
+        UiService.HideLoader();
     }
 
     private bool _showSidebar;
@@ -123,9 +125,11 @@
         var confirmationModel = ConfirmationModel.Create($"Do you want to delete this client '{client.Name}'?",
         async () => 
         {
+            UiService.ShowLoader("Deleting client");
             await ClientService.DeleteAsync(UserId, client.Id);
             _clients.Remove(client);
             await InvokeAsync(StateHasChanged);
+            UiService.HideLoader();
         });
 
         UiService.Confirm(confirmationModel);

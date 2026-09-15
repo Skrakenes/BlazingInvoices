@@ -5,6 +5,7 @@
 @inject ProductService ProductService
 @inject InvoiceService InvoiceService
 @inject UserService UserService
+@inject NavigationManager NavigationManager
 
 <EditForm Model="_model" OnValidSubmit="HandleSaveInvoiceAsync"  class="text-slate-600">
     <DataAnnotationsValidator />
@@ -223,6 +224,8 @@
     {
         _model.IssuedOn = DateTime.Now.Date;
 
+        UiService.ShowLoader("Loading");
+
         var clientsTask= ClientService.GetClientsAsync(UserId);
         var servicesTask  = ProductService.GetServicesAsync(UserId);
 
@@ -237,6 +240,8 @@
         _model.TaxPercentage = _businessInfo.TaxPercentage;
 
         _model.LineItems.Add(new());
+
+        UiService.HideLoader();
     }
 
     private ClientModel? _selectedClient;
@@ -295,7 +300,10 @@
     IEnumerable<string> _errors = [];
     private async Task HandleSaveInvoiceAsync()
     {
+        UiService.ShowLoader("Saving invoice");
         await InvoiceService.SaveInvoiceAsync(UserId, _model);
+        UiService.HideLoader();
+        NavigationManager.NavigateTo("invoices"); 
     }
 
 }

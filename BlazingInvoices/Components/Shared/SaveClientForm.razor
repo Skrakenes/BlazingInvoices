@@ -1,5 +1,5 @@
 @inject ClientService ClientService
-
+@inject UiService UiService
 <EditForm Model="_model" OnValidSubmit="HandleSaveClientAsync">
     <DataAnnotationsValidator/>
     <RightSidePanel Title="@(_model.Id == 0 ? "Add Client" : "Edit Client")"
@@ -60,7 +60,9 @@
 
     private async Task HandleSaveClientAsync()
     {
+        UiService.ShowLoader("Saving client");
         var savedClient = await ClientService.SaveAsync(UserId, _model);
         await OnSave.InvokeAsync(savedClient);
+        UiService.HideLoader();
     }
 }

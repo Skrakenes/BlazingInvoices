@@ -1,0 +1,69 @@
+﻿@implements IDisposable
+@inject UiService UiService
+
+@if(_show && _options is not null)
+{
+ <div class="fixed top-5 left-[50%] translate-x-[-50%] @BgClass px-5 py-3 rounded shadow-lg flex gap-3 min-w-[350px] items-center justify-between z-50">
+    <p class="">@_options.Message</p>
+    <button type="button" class="border rounded border-slate-100 cursor-pointer hover:bg-yellow-100" @onclick="CloseToast">
+        <img src="/icons/x.svg" />
+</button>
+</div>
+}
+
+@code {
+    private bool _show;
+    private ToastOptions? _options;
+
+    private string BgClass => _options!.ToastType switch
+    {
+        ToastType.Success => "bg-green-200",
+        ToastType.Error => "bg-red-200",
+        _ => "bg-gray-200"
+    };
+
+
+    protected override void OnInitialized()
+    {
+        UiService.OnShowToast += HandleShowToast;
+    }
+
+    private CancellationTokenSource? _cts;
+
+    private async  void HandleShowToast(ToastOptions options)
+    {
+        _options = options;
+        _show = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (options.ToastType == ToastType.Success)
+            await AtutoCloseToastAsync();
+    }
+
+    private async Task AtutoCloseToastAsync()
+    {
+        _cts?.Cancel();
+        _cts = new();
+
+        try
+        {
+            await Task.Delay(3000, _cts.Token);
+            CloseToast();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (TaskCanceledException) { }
+    }
+
+    private void CloseToast()
+    {
+        _cts?.Cancel();
+        _show = false;
+        _options = null;
+    }
+
+    public void Dispose()
+    {
+        UiService.OnShowToast -= HandleShowToast;
+        _cts?.Dispose();
+    }
+}

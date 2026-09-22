@@ -64,5 +64,6 @@
         var savedClient = await ClientService.SaveAsync(UserId, _model);
         await OnSave.InvokeAsync(savedClient);
         UiService.HideLoader();
+        UiService.ShowToast(ToastOptions.Success($"Client {(Client.Id > 0 ? "Updated" : "Added")} successfully"));
     }
 }

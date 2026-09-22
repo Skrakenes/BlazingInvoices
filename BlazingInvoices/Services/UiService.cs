@@ -15,4 +15,7 @@ public class UiService
 
     public void ShowLoader(string loadingText = "Loading") => OnShowloader?.Invoke(loadingText);
     public void HideLoader() => OnHideLoader?.Invoke();
+
+    public event Action<ToastOptions>? OnShowToast;
+    public void ShowToast(ToastOptions options) => OnShowToast?.Invoke(options);
 }

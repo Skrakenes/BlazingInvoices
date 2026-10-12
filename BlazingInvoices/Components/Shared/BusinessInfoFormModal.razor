@@ -95,5 +95,7 @@
         await OnSaveBusinessName.InvokeAsync(_model.BusinessName);
         await OnClose.InvokeAsync();
         UiService.HideLoader();
+
+        UiService.ShowToast(ToastOptions.Success($"Business info updated successfully"));
     }
 }

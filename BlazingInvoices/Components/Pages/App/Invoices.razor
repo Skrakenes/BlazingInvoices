@@ -1,5 +1,6 @@
 @page "/invoices"
 
+@inject InvoiceService InvoiceService
 @inject UiService UiService
 
 <div class="roudned-lg flex w-full flex-col bg-white p-5">
@@ -38,12 +39,18 @@
             <div>
                 <InvoicesGrid Invoices="_invoices" />
             </div>
+            <div class="w-full my-3 flex justify-between items-center">
+            
+            </div>
         }
     </div>
 </div>
 
 
 @code {
+
+    [CascadingParameter(Name = nameof(MainLayout.UserId))]
+    public required string UserId { get; set; }
 
     private Tab[] _tabs = [
         new (InvoiceTabTypes.Recent, "indigo", true),
@@ -52,46 +59,45 @@
         new (InvoiceTabTypes.All, "blue")
     ];
 
-    private IEnumerable<InvoiceModel> _allInvoices = [];
+    private int _pageNumber = 1;
+    private int _pageSize = 10;
+    private int _totalItems;
+
+    private bool HasNextPage => _pageNumber * _pageSize < _totalItems;
+    private bool HasPreviousPage => _pageNumber > 1;
+
+    //private IEnumerable<InvoiceModel> _allInvoices = [];
     private IEnumerable<InvoiceModel> _invoices = [];
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        _allInvoices = InvoiceSeeder.GetSeedInvoices();
-        FilterInvoices(InvoiceTabTypes.Recent);
+        // _allInvoices = InvoiceSeeder.GetSeedInvoices();
+        await FilterInvoices(InvoiceTabTypes.Recent);
     }
 
-    private void ChangeTab(Tab tab)
+    private async Task ChangeTab(Tab tab)
     {
         var currentActiveTab = _tabs.First(t => t.IsActive);
         currentActiveTab.IsActive = false;
         tab.IsActive = true;
-        FilterInvoices(tab.Name);
+        await FilterInvoices(tab.Name);
     }
 
-    private void FilterInvoices(string selectedTabName)
+    private async Task FilterInvoices(string selectedTabName)
     {
-        var filteredInvoices = selectedTabName switch
-        {
-            InvoiceTabTypes.Recent => _allInvoices.OrderByDescending(i => i.Id).Take(5),
-            InvoiceTabTypes.Pending => _allInvoices.Where(i => !i.IsPaid),
-            InvoiceTabTypes.Paid => _allInvoices.Where(i => i.IsPaid),
-            InvoiceTabTypes.All => _allInvoices.Take(10),
-            _ => throw new InvalidOperationException()
-        };
+        // var filteredInvoices = selectedTabName switch
+        // {
+        //     InvoiceTabTypes.Recent => _allInvoices.OrderByDescending(i => i.Id).Take(5),
+        //     InvoiceTabTypes.Pending => _allInvoices.Where(i => !i.IsPaid),
+        //     InvoiceTabTypes.Paid => _allInvoices.Where(i => i.IsPaid),
+        //     InvoiceTabTypes.All => _allInvoices.Take(10),
+        //     _ => throw new InvalidOperationException()
+        // };
 
-        _invoices = [.. filteredInvoices];
+        // _invoices = [.. filteredInvoices];
 
-    }
+        (_invoices, _totalItems) = await InvoiceService.GetInvoicesAsync(UserId, selectedTabName, _pageNumber, _pageSize);
 
-
-
-    private class InvoiceTabTypes
-    {
-        public const string Recent = "Recent";
-        public const string Pending = "Pending";
-        public const string Paid = "Paid";
-        public const string All = "All";
     }
 
     private class Tab

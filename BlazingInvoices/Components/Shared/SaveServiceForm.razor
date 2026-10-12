@@ -67,5 +67,7 @@
         var savedService = await ProductService.SaveAsync(UserId, _model);
         await OnSave.InvokeAsync(savedService);
         UiService.HideLoader();
+
+        UiService.ShowToast(ToastOptions.Success($"Service {(Service.Id > 0 ? "Updated" : "Added")} successfully"));
     }
 }

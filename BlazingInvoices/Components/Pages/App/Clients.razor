@@ -130,6 +130,8 @@
             _clients.Remove(client);
             await InvokeAsync(StateHasChanged);
             UiService.HideLoader();
+
+            UiService.ShowToast(ToastOptions.Success($"Client deleted successfully"));
         });
 
         UiService.Confirm(confirmationModel);

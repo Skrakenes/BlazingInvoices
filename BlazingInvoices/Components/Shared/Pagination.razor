@@ -1,0 +1,72 @@
+﻿<div class="w-full my-3 flex justify-between items-center">
+    <label>
+        Showing @(((_pageNumber - 1) * PageSize) + 1)-@(!HasNextPage ? TotalItems : (_pageNumber * PageSize)) of @TotalItems invoices
+    </label>
+    <div class="flex items-center gap-2 ">
+        <button type="button" title="First Page" class="w-[40px] rounded border border-slate-100 hover:bg-slate-100 p-3 text-center cursor-pointer disabled:cursor-not-allowed disabled:bg-red-50"
+                disabled="@(!HasPreviousPage)" @onclick="() => HandlePageChange(1)">
+            &lt;&lt;
+        </button>
+        <button type="button" title="Previous Page" class="w-[40px] rounded border border-slate-100 hover:bg-slate-100 p-3 text-center cursor-pointer disabled:cursor-not-allowed disabled:bg-red-50"
+                disabled="@(!HasPreviousPage)" @onclick="() => HandlePageChange(_pageNumber - 1)">
+            &lt;
+        </button>
+
+        <input type="text" class="w-[40px] rounded border border-slate-100 p-3 text-center" @bind="_pageNumber"
+               @bind:after="AfterPageChangeFromTextbox" />
+
+        <button type="button" title="Next Page" class="min-w-[40px] rounded border border-slate-100 hover:bg-slate-100 p-3 text-center cursor-pointer disabled:cursor-not-allowed disabled:bg-red-50"
+                disabled="@(!HasNextPage)" @onclick="() => HandlePageChange(_pageNumber + 1)">
+            &gt;
+        </button>
+        <button type="button" title="Last Page" class="w-[40px] rounded border border-slate-100 hover:bg-slate-100 p-3 text-center cursor-pointer disabled:cursor-not-allowed disabled:bg-red-50"
+                disabled="@(!HasNextPage)" @onclick="() => HandlePageChange(LastPageNumber)">
+            &gt;&gt;
+        </button>
+    </div>
+</div>
+@code {
+    [Parameter, EditorRequired]
+    public int PageNumer { get; set; }
+
+    [Parameter, EditorRequired]
+    public int PageSize { get; set; }
+
+    [Parameter, EditorRequired]
+    public int TotalItems { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnPageChange { get; set; }
+
+    private int _pageNumber = 1;
+    protected override void OnParametersSet()
+    {
+        if (PageNumer != _pageNumber)
+        {
+            _pageNumber = PageNumer;
+        }
+    }
+
+
+    private bool HasNextPage => _pageNumber * PageSize < TotalItems;
+    private bool HasPreviousPage => _pageNumber > 1;
+    private int LastPageNumber
+    {
+        get
+        {
+            var remainder = TotalItems % PageSize;
+            var lastPageNumber = TotalItems / PageSize;
+            if (remainder > 0)
+            {
+                lastPageNumber++;
+            }
+            return lastPageNumber;
+        }
+    }
+
+    private Task HandlePageChange(int pageNumber) => OnPageChange.InvokeAsync(pageNumber);
+
+    private Task AfterPageChangeFromTextbox() => HandlePageChange(_pageNumber);
+
+
+}

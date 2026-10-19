@@ -1,4 +1,6 @@
 @inject UiService UiService
+@inject InvoiceService InvoiceService
+@inject NavigationManager NavigationManager
 
 <table class="min-w-full  text-sm">
     <thead>
@@ -97,7 +99,7 @@
                                     {
                                         <button type="button"
                                                 class=" px-2 py-1 rounded border cursor-pointer border-blue-100 hover:bg-blue-100   "
-                                                title="Edit Invoice">
+                                                title="Edit Invoice" @onclick="() => EditInvoice(invoice.Id)">
                                             <img src="icons/pencil.svg" />
                                         </button>
                                         <button type="button"
@@ -119,7 +121,7 @@
                     }
                 </tbody>
             </table>
-
+             
             @if (_showLineItemsForInvoiceId > 0)
             {
                 var invoice = Invoices.First(i => i.Id == _showLineItemsForInvoiceId.Value);
@@ -128,17 +130,31 @@
             }
 
 @code {
+    [CascadingParameter(Name = nameof(MainLayout.UserId))]
+    public required string UserId { get; set; }
+
     [Parameter, EditorRequired]
     public IEnumerable<InvoiceModel> Invoices { get; set; } = [];
 
+    [Parameter]
+    public EventCallback OnInvoiceDelete { get; set; }
+
     private int? _showLineItemsForInvoiceId;
+
     private void DeleteInvocie(InvoiceModel invoice)
     {
-        var confirmationModel = ConfirmationModel.Create($"Do you want to delete invoice '{invoice.InvoiceNumber}'?", () =>
+        var confirmationModel = ConfirmationModel.Create($"Do you want to delete invoice '{invoice.InvoiceNumber}'?", async () =>
         {
             //Delete from db
+            UiService.ShowLoader("Deleting Invoice");
+            await InvoiceService.DeleteInvoicesAsync(UserId, invoice.Id);
+            UiService.HideLoader();
+            await OnInvoiceDelete.InvokeAsync();
+            UiService.ShowToast(ToastOptions.Success("Invoice deleted successfully.")); 
         });
 
         UiService.Confirm(confirmationModel);
     }
+
+    private void EditInvoice(int invocieId) => NavigationManager.NavigateTo($"invoices/{invocieId}/edit");
 }

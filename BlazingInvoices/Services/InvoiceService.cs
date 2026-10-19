@@ -22,7 +22,6 @@ public class InvoiceService
             //new invoice creation
             Invoice invoice = new Invoice
             {
-                Id = model.Id,
                 BusinessAddress = model.BusinessAddress,
                 BusinessContactNumber = model.BusinessContactNumber,
                 BusinessEmailId = model.BusinessEmailId,
@@ -52,14 +51,40 @@ public class InvoiceService
         else
         {
             //update existing invoice
+            var invoice = await context.Invoices
+                .AsTracking()
+                .Include(i => i.LineItems)
+                .FirstOrDefaultAsync(i => i.Id == model.Id && i.UserId == userId);
+
+            if (invoice is null)
+                ArgumentNullException.ThrowIfNull(invoice);
+
+            invoice.ClientContactNumber = model.ClientContactNumber;
+            invoice.ClientEmailId = model.ClientEmailId;
+            invoice.ClientName = model.ClientName;
+            invoice.ClientId = model.ClientId;
+            invoice.DueOn = model.DueOn;
+            invoice.InvoiceNumber = model.InvoiceNumber;
+            invoice.IsPaid = model.IsPaid;
+            invoice.IssuedOn = model.IssuedOn;
+            invoice.Notes = model.Notes;
+
+            context.InvoiceLineItems.RemoveRange(invoice.LineItems);
+            var newLineItems = model.LineItems.Select(li => new InvoiceLineItem
+            {
+                InvoiceId = model.Id,
+                Name = li.ServiceName,
+                Quantity = li.Quantity,
+                Rate = li.Rate,
+                ServiceId = li.ServiceId,
+                Unit = li.Unit
+            });
+            context.InvoiceLineItems.AddRange(newLineItems);
         }
 
         await context.SaveChangesAsync();
         return model;
     }
-
-
-
 
     public async Task<PagedResult<InvoiceModel>> GetInvoicesAsync(string userId, string forTabType, int pageNumber = 1, int pageSize = 10)
     {
@@ -125,5 +150,60 @@ public class InvoiceService
         }).ToListAsync();
 
         return PagedResult<InvoiceModel>.Create(invoices, total);
+    }
+
+    public async Task DeleteInvoicesAsync(string userId, int invoiceId)
+    {
+        using var context = _contextFactory.CreateDbContext();
+
+        var invoice = await context.Invoices
+            .Include(i => i.LineItems)
+            .FirstOrDefaultAsync(i => i.Id == invoiceId && i.UserId == userId);
+
+        if (invoice is null)
+            return;
+
+        context.InvoiceLineItems.RemoveRange(invoice.LineItems);
+        context.Invoices.Remove(invoice);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<InvoiceModel?> GetInvoiceAsync(string userId, int invoiceId)
+    {
+        using var context = _contextFactory.CreateDbContext();
+
+        var invoice = await context.Invoices
+            .Include(i => i.LineItems)
+            .Where(i => i.Id == invoiceId && i.UserId == userId)
+            .Select(i => new InvoiceModel
+            {
+                Id = i.Id,
+                LineItems = i.LineItems
+                    .Select(li => new InvoiceLineItemModel
+                    {
+                        Quantity = li.Quantity,
+                        Rate = li.Rate,
+                        ServiceId = li.ServiceId ?? 0,
+                        ServiceName = li.Name,
+                        Unit = li.Unit,
+                    }).ToList(),
+                IsPaid = i.IsPaid,
+                BusinessAddress = i.BusinessAddress,
+                BusinessContactNumber = i.BusinessContactNumber,
+                BusinessEmailId = i.BusinessEmailId,
+                BusinessName = i.BusinessName,
+                ClientContactNumber = i.ClientContactNumber,
+                ClientEmailId = i.ClientEmailId,
+                ClientId = i.ClientId ?? 0,
+                ClientName = i.ClientName,
+                DueOn = i.DueOn,
+                InvoiceNumber = i.InvoiceNumber,
+                IssuedOn = i.IssuedOn,
+                TaxPercentage = i.TaxPercentage,
+                PaidOn = i.PaidOn,
+                Notes = i.Notes
+            }).FirstOrDefaultAsync();
+
+        return invoice;
     }
 }

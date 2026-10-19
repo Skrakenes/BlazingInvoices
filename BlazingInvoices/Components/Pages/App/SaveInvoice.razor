@@ -1,4 +1,5 @@
 @page "/invoices/create"
+@page "/invoices/{invoiceId:int?}/edit"
 
 @inject UiService UiService
 @inject ClientService ClientService
@@ -213,6 +214,11 @@
     [CascadingParameter(Name = nameof(MainLayout.UserId))]
     public required string UserId { get; set; }
 
+    [Parameter]
+    public int? InvoiceId { get; set; }
+
+    private bool IsEditMode => InvoiceId > 0;
+
     private InvoiceModel _model = new();
 
     private IEnumerable<ClientModel> _clients = [];
@@ -222,8 +228,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _model.IssuedOn = DateTime.Now.Date;
-
         UiService.ShowLoader("Loading");
 
         var clientsTask= ClientService.GetClientsAsync(UserId);
@@ -233,14 +237,32 @@
         _clients = await clientsTask;
         _services = await servicesTask;
 
-        _model.BusinessAddress = _businessInfo.Address;
-        _model.BusinessContactNumber = _businessInfo.ContactNumber;
-        _model.BusinessEmailId = _businessInfo.EmailId;
-        _model.BusinessName = _businessInfo.BusinessName;
-        _model.TaxPercentage = _businessInfo.TaxPercentage;
 
-        _model.LineItems.Add(new());
+        if(IsEditMode)
+        {
+            // Edit, fetch from database
+            var invoice = await InvoiceService.GetInvoiceAsync(UserId, InvoiceId!.Value);
+            if(invoice is null)
+            {
+                UiService.ShowToast(ToastOptions.Error("Invalid invoice"));
+                NavigationManager.NavigateTo("invoices");
+                return;
+            }
 
+            _model = invoice;
+            HandleClientSelection();
+        }
+        else
+        {
+            _model.IssuedOn = DateTime.Now.Date;
+            _model.BusinessAddress = _businessInfo.Address;
+            _model.BusinessContactNumber = _businessInfo.ContactNumber;
+            _model.BusinessEmailId = _businessInfo.EmailId;
+            _model.BusinessName = _businessInfo.BusinessName;
+            _model.TaxPercentage = _businessInfo.TaxPercentage;
+
+            _model.LineItems.Add(new());
+        }
         UiService.HideLoader();
     }
 
@@ -305,7 +327,7 @@
         UiService.HideLoader();
         NavigationManager.NavigateTo("invoices"); 
 
-        UiService.ShowToast(ToastOptions.Success($"Invoice created successfully"));
+        UiService.ShowToast(ToastOptions.Success($"Invoice {(IsEditMode ? "Updated" : "Created")} successfully"));
     }
 
 }

@@ -37,7 +37,8 @@
         else
         {
             <div>
-                <InvoicesGrid Invoices="_invoices" />
+                <InvoicesGrid Invoices="_invoices" 
+                              OnInvoiceDelete="FilterInvoices" />
             </div>
             @if (_selectedTabName != InvoiceTabTypes.Recent)
             {
@@ -89,7 +90,9 @@
 
     private async Task FilterInvoices()
     {
+        UiService.ShowLoader("Fetching Invoices");
         (_invoices, _totalItems) = await InvoiceService.GetInvoicesAsync(UserId, _selectedTabName, _pageNumber, _pageSize);
+        UiService.HideLoader();
     }
 
     private  Task HandlePageChange(int pageNumber)

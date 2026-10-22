@@ -200,8 +200,8 @@ namespace BlazingInvoices.Migrations
 
                     b.Property<string>("InvoiceNumber")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
@@ -227,9 +227,26 @@ namespace BlazingInvoices.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "InvoiceNumber")
+                        .IsUnique();
 
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("BlazingInvoices.Data.InvoiceCounter", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LastSequence")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "Year");
+
+                    b.ToTable("InvoiceCounters");
                 });
 
             modelBuilder.Entity("BlazingInvoices.Data.InvoiceLineItem", b =>

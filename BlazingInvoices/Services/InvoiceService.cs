@@ -20,33 +20,7 @@ public class InvoiceService
         if (model.Id == 0)
         {
             //new invoice creation
-            Invoice invoice = new Invoice
-            {
-                BusinessAddress = model.BusinessAddress,
-                BusinessContactNumber = model.BusinessContactNumber,
-                BusinessEmailId = model.BusinessEmailId,
-                BusinessName = model.BusinessName,
-                ClientContactNumber = model.ClientContactNumber,
-                ClientEmailId = model.ClientEmailId,
-                ClientName = model.ClientName,
-                ClientId = model.ClientId,
-                DueOn = model.DueOn,
-                InvoiceNumber = model.InvoiceNumber,
-                IsPaid = model.IsPaid,
-                IssuedOn = model.IssuedOn,
-                Notes = model.Notes,
-                TaxPercentage = model.TaxPercentage,
-                UserId = userId,
-                LineItems = model.LineItems.Select(li => new InvoiceLineItem
-                {
-                    Name = li.ServiceName,
-                    Quantity = li.Quantity,
-                    Rate = li.Rate,
-                    ServiceId = li.ServiceId,
-                    Unit = li.Unit
-                }).ToArray()
-            };
-            context.Invoices.Add(invoice);
+            model = await CreateNewInvoiceAsync(userId, model, context);
         }
         else
         {
@@ -64,7 +38,6 @@ public class InvoiceService
             invoice.ClientName = model.ClientName;
             invoice.ClientId = model.ClientId;
             invoice.DueOn = model.DueOn;
-            invoice.InvoiceNumber = model.InvoiceNumber;
             invoice.IsPaid = model.IsPaid;
             invoice.IssuedOn = model.IssuedOn;
             invoice.Notes = model.Notes;
@@ -80,9 +53,81 @@ public class InvoiceService
                 Unit = li.Unit
             });
             context.InvoiceLineItems.AddRange(newLineItems);
+            await context.SaveChangesAsync();
         }
 
-        await context.SaveChangesAsync();
+        return model;
+    }
+
+    public static async Task<InvoiceModel> CreateNewInvoiceAsync(string userId, InvoiceModel model, ApplicationDbContext context)
+    {
+        using var sqlTransaction = await context.Database.BeginTransactionAsync();
+
+        try
+        {
+            var year = model.IssuedOn.Year;
+
+            var invoiceCounter = await context.InvoiceCounters
+                        .AsTracking()
+                        .FirstOrDefaultAsync(ic => ic.UserId == userId && ic.Year == year);
+
+            if (invoiceCounter is null)
+            {
+                // Create a new InvoiceCounter for the user and year if it doesn't exist
+                invoiceCounter = new InvoiceCounter
+                {
+                    UserId = userId,
+                    Year = year,
+                    LastSequence = 0
+                };
+
+                context.InvoiceCounters.Add(invoiceCounter);
+            }
+
+            invoiceCounter.LastSequence++;
+
+            var invoiceNumber = $"INV{year}-{invoiceCounter.LastSequence:D4}";
+
+            var invoice = new Invoice
+            {
+                BusinessAddress = model.BusinessAddress,
+                BusinessContactNumber = model.BusinessContactNumber,
+                BusinessEmailId = model.BusinessEmailId,
+                BusinessName = model.BusinessName,
+                ClientContactNumber = model.ClientContactNumber,
+                ClientEmailId = model.ClientEmailId,
+                ClientName = model.ClientName,
+                ClientId = model.ClientId,
+                DueOn = model.DueOn,
+                InvoiceNumber = invoiceNumber,
+                IsPaid = model.IsPaid,
+                IssuedOn = model.IssuedOn,
+                Notes = model.Notes,
+                TaxPercentage = model.TaxPercentage,
+                UserId = userId,
+                LineItems = model.LineItems.Select(li => new InvoiceLineItem
+                {
+                    Name = li.ServiceName,
+                    Quantity = li.Quantity,
+                    Rate = li.Rate,
+                    ServiceId = li.ServiceId,
+                    Unit = li.Unit
+                }).ToArray()
+            };
+            context.Invoices.Add(invoice);
+
+            await context.SaveChangesAsync();
+
+            await sqlTransaction.CommitAsync();
+            model.Id = invoice.Id;
+            model.InvoiceNumber = invoice.InvoiceNumber;
+        }
+        catch (Exception ex)
+        {
+            await sqlTransaction.RollbackAsync();
+            throw;
+        }
+
         return model;
     }
 

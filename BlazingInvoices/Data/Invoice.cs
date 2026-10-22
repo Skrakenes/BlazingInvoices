@@ -7,7 +7,7 @@ public class Invoice
     [Key]
     public int Id { get; set; }
 
-    [Required, MaxLength(10)]
+    [Required, MaxLength(15)]
     public string InvoiceNumber { get; set; }
 
     public int? ClientId { get; set; }

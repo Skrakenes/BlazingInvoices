@@ -7,7 +7,7 @@ public class InvoiceModel : IValidatableObject
 {
     public int Id { get; set; }
 
-    [Required]
+
     public string InvoiceNumber { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "Client selection is required")]

@@ -251,4 +251,36 @@ public class InvoiceService
 
         return invoice;
     }
+
+    public async Task MarkInvoiceAsUnpaidAsync(string userId, int invoiceId)
+    {
+        using var context = _contextFactory.CreateDbContext();
+
+        var invoice = await context.Invoices
+                .AsTracking()
+                .Where(i => i.Id == invoiceId && i.UserId == userId)
+                .FirstOrDefaultAsync();
+
+        ArgumentNullException.ThrowIfNull(invoice);
+
+        invoice.IsPaid = false;
+        invoice.PaidOn = null;
+        await context.SaveChangesAsync();
+    }
+
+    public async Task MarkInvoiceAsPaidAsync(string userId, int invoiceId, DateTime paidOn)
+    {
+        using var context = _contextFactory.CreateDbContext();
+
+        var invoice = await context.Invoices
+                .AsTracking()
+                .Where(i => i.Id == invoiceId && i.UserId == userId)
+                .FirstOrDefaultAsync();
+
+        ArgumentNullException.ThrowIfNull(invoice);
+
+        invoice.IsPaid = true;
+        invoice.PaidOn = paidOn;
+        await context.SaveChangesAsync();
+    }
 }

@@ -39,6 +39,7 @@ public class InvoiceService
             invoice.ClientId = model.ClientId;
             invoice.DueOn = model.DueOn;
             invoice.IsPaid = model.IsPaid;
+            invoice.PaidOn = model.PaidOn;
             invoice.IssuedOn = model.IssuedOn;
             invoice.Notes = model.Notes;
 
@@ -101,6 +102,7 @@ public class InvoiceService
                 DueOn = model.DueOn,
                 InvoiceNumber = invoiceNumber,
                 IsPaid = model.IsPaid,
+                PaidOn = model.PaidOn,
                 IssuedOn = model.IssuedOn,
                 Notes = model.Notes,
                 TaxPercentage = model.TaxPercentage,

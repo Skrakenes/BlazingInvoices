@@ -58,7 +58,8 @@
                             </div>
 
                         </div>
-                        <div class="grid grid-cols-3 gap-3">
+
+                        <div class="grid grid-cols-4 gap-3">
                             <div class="">
                                 <label class="text-xs text-slate-500">Issued On</label>
                                 <InputDate @bind-value="_model.IssuedOn"
@@ -81,7 +82,15 @@
                                     <option value="@bool.TrueString">Paid</option>
                                 </InputSelect>
                             </div>
+                            <div class="">
+                                <label class="text-xs text-slate-500">Paid On</label>
+                                <InputDate @bind-value="_model.PaidOn"
+                                           class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm disabled:bg-gray-200"
+                                           placeholder="Paid On" disabled="@(!_model.IsPaid)"></InputDate>
+                                <ValidationMessage For="() => _model.PaidOn" class="text-xs text-red-500" />
+                            </div>
                         </div>
+
                         <div class="">
                             <div class="">
                                 <label class="text-xs text-slate-500">Notes</label>

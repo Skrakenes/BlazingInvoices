@@ -11,6 +11,7 @@
             <th class="py-2 text-left">Issued on</th>
             <th class="py-2 text-left">Due on</th>
             <th class="py-2 text-center">Status</th>
+            <th class="py-2 text-left">Paid on</th>
             <th class="py-2 text-center">Action</th>
             <th class="py-2 text-right">Total Amount</th>
             <th class="py-2 text-center">Actions</th>
@@ -48,8 +49,8 @@
                         item(s)</button>
                     </td>
                     <td class="py-2 text-left">@invoice.ClientName</td>
-                    <td class="py-2 text-left">@invoice.IssuedOn.ToString("dd-MMM-yyyy")</td>
-                    <td class="py-2 text-left">@(invoice.DueOn?.ToString("dd-MMM-yyyy") ?? "NA")</td>
+                    <td class="py-2 text-left">@invoice.IssuedOn.ToString("dd-MM-yyyy")</td>
+                    <td class="py-2 text-left">@(invoice.DueOn?.ToString("dd-MM-yyyy") ?? "NA")</td>
 
                     <td class="py-2 text-center">
                         <div class="flex justify-center items-center">
@@ -65,6 +66,8 @@
                             }
                         </div>
                     </td>
+
+                    <td class="py-2 text-left">@(invoice.PaidOn?.ToString("dd-MM-yyyy") ?? "NA")</td>
 
                     <td class="py-2 text-center">
                         <div class="flex justify-center items-center ">

@@ -57,6 +57,9 @@ public class InvoiceModel : IValidatableObject
         if (DueOn.HasValue && DueOn < IssuedOn)
             yield return new ValidationResult("Due date cannot be less than Issued date", [nameof(DueOn)]);
 
+        if (IsPaid && (PaidOn is null || PaidOn == default || PaidOn == DateTime.MinValue))
+            yield return new ValidationResult("Invalid paid on date", [nameof(PaidOn)]);
+
         if (LineItems.Count == 0)
             yield return new ValidationResult("Atleast 1 line item should be selected", [nameof(LineItemsErrors)]);
     }
